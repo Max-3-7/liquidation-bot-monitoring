@@ -1,0 +1,22 @@
+{
+  "name": "traderjoe-liquidation-bot",
+  "version": "1.0.0",
+  "description": "1. Identity underwater accounts (0 < health < 1) using subgraph: https://thegraph.com/hosted-service/subgraph/traderjoe-xyz/lending",
+  "main": "identify-underwater-accounts.js",
+  "scripts": {
+    "start": "tsc && node dist/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/client": "^3.4.16",
+    "cross-fetch": "^3.1.4",
+    "graphql": "^15.6.1",
+    "web3": "^1.6.0"
+  },
+  "devDependencies": {
+    "prettier": "2.4.1",
+    "tslint": "^5.20.1",
+    "typescript": "^3.9.10"
+  }
+}
