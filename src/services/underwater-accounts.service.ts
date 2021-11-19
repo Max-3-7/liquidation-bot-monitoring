@@ -13,12 +13,11 @@ const accountsQuery = `
         jTokenBalance
         borrowBalanceUnderlying
         supplyBalanceUnderlying
+        enteredMarket
         market {
           id
         }
       }
-      countLiquidated
-      countLiquidator
       hasBorrowed
       health
       totalBorrowValueInUSD
@@ -34,6 +33,7 @@ export interface Token {
   borrowBalanceUnderlying: number
   supplyBalanceUnderlying: number
   market: Market
+  enteredMarket: boolean
 }
 
 interface Market {
@@ -41,11 +41,9 @@ interface Market {
   underlyingPriceUSD: number
 }
 
-interface Account {
+export interface Account {
   id: string
   tokens: Token[]
-  countLiquidated: number
-  countLiquidator: number
   hasBorrowed: boolean
   health: number
   totalBorrowValueInUSD: number
@@ -54,8 +52,6 @@ interface Account {
 
 const response = [
   {
-    countLiquidated: 0,
-    countLiquidator: 0,
     hasBorrowed: true,
     health: 1.03836855184200967,
     id: '0x000000e28faa823d5b53ff6c2922c28335840375',
@@ -69,6 +65,7 @@ const response = [
         },
         supplyBalanceUnderlying: 168.306191999988726634289512,
         symbol: 'jUSDT',
+        enteredMarket: true,
       },
       {
         borrowBalanceUnderlying: 255984.9866746117749087573567332085,
@@ -79,6 +76,7 @@ const response = [
         },
         supplyBalanceUnderlying: 331000.3222525106073053763832,
         symbol: 'jUSDC',
+        enteredMarket: true,
       },
     ],
     totalBorrowValueInUSD: 255491.69214945627608,

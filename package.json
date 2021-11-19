@@ -4,7 +4,8 @@
   "description": "1. Identity underwater accounts (0 < health < 1) using subgraph: https://thegraph.com/hosted-service/subgraph/traderjoe-xyz/lending",
   "main": "identify-underwater-accounts.js",
   "scripts": {
-    "start": "tsc && node dist/app.js"
+    "start": "tsc && node dist/app.js",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +16,13 @@
     "web3": "^1.6.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^9.0.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3",
+    "nyc": "^15.1.0",
     "prettier": "2.4.1",
+    "ts-node": "^10.4.0",
     "tslint": "^5.20.1",
     "typescript": "^3.9.10"
   }

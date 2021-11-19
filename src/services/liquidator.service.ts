@@ -1,21 +1,18 @@
-import { fetchUnderwaterAccounts, Token } from './underwater-accounts.service'
+import { fetchUnderwaterAccounts, Token, Account } from './underwater-accounts.service'
 import Web3 from 'web3'
 import { AbiItem } from 'web3-utils'
-import jAVAXABI from './../ABI/jAVAX.json'
-import jWETHABI from './../ABI/jWETH.json'
-import jWBTCABI from './../ABI/jWBTC.json'
-import jUSDCABI from './../ABI/jUSDC.json'
-import JoetrollerABI from './../ABI/LendingJoetroller.json'
+import TraderJoeLiquidatorABI from './../ABI/TraderJoeLiquidator.json'
 
 // https://docs.traderjoexyz.com/main/contracts
 enum ContractAddress {
   Joetroller = '0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC',
+  TraderJoeLiquidator = '0x0000000', // TODO
 }
 
 const web3 = new Web3('https://api.avax.network/ext/bc/C/rpc')
 // const web3 = new Web3('https://api.avax-test.network/ext/bc/C/rpc')
 
-export async function liquidate() {
+export async function fetchUnderwaterAccountsAndLiquidate() {
   const underwaterAccounts = await fetchUnderwaterAccounts()
   console.log(underwaterAccounts)
 
@@ -23,40 +20,44 @@ export async function liquidate() {
   //   return
   // }
 
-  // TODO: do each account in parallel
-  const underwaterAccount = underwaterAccounts[0]
+  underwaterAccounts.forEach((account) => liquidateUnderwaterAccount(account))
+}
+
+async function liquidateUnderwaterAccount(underwaterAccount: Account) {
   const borrower = underwaterAccount.id
   console.log(`Liquidating ${borrower}...`)
 
   console.log(underwaterAccount.tokens)
 
+  const jTokens = getRepayAndCollateralJTokens(underwaterAccount)
+  console.log(`[${borrower}] Will repay dept in ${jTokens.repay.symbol} and seize ${jTokens.collateral.symbol}`)
+
+  await liquidate(borrower, jTokens.repay.market.id, jTokens.collateral.market.id)
+}
+
+export function getRepayAndCollateralJTokens(underwaterAccount: Account): { repay: Token; collateral: Token } {
   const jTokenWithHighestBorrowValue = underwaterAccount.tokens.reduce((p, c) =>
     getBorrowBalanceUnderlyingInUSD(p) > getBorrowBalanceUnderlyingInUSD(c) ? p : c
   )
-  const repayAmount = jTokenWithHighestBorrowValue.borrowBalanceUnderlying * getCloseFactor()
-  // TODO: check enterMarket == true
-  const jTokenCollateral = underwaterAccount.tokens.reduce((p, c) =>
-    getSupplyBalanceUnderlyingInUSD(p) > getSupplyBalanceUnderlyingInUSD(c) ? p : c
-  )
-  console.log(
-    `Will repay ${repayAmount} in ${jTokenWithHighestBorrowValue.symbol} and seize ${jTokenCollateral.symbol}`
-  )
+  const jTokenCollateral = underwaterAccount.tokens
+    .filter((token) => token.enteredMarket === true)
+    .reduce((p, c) => (getSupplyBalanceUnderlyingInUSD(p) > getSupplyBalanceUnderlyingInUSD(c) ? p : c))
 
-  // TODO: flash loan to borrow repayAmount of jTokenWithHighestBorrowValue 
+  return { repay: jTokenWithHighestBorrowValue, collateral: jTokenCollateral }
+}
 
-  const contract = getTokenContract(jTokenWithHighestBorrowValue)
-  const result = await contract.methods
-    .liquidateBorrow(borrower, repayAmount, jTokenCollateral.market.id)
-    .call() // TODO: call from account
+async function liquidate(borrower: string, jTokenRepay: string, jTokenCollateral: string) {
+  const liquidator = new web3.eth.Contract(TraderJoeLiquidatorABI as AbiItem[], ContractAddress.TraderJoeLiquidator)
+  const result = await liquidator.methods
+    .liquidate(borrower, jTokenRepay, jTokenCollateral)
+    .call() // TODO: call from owner account
     .catch((e) => {
-      throw Error(`Error : ${e.message}`)
+      throw Error(`[${borrower}] Error : ${e.message}`)
     })
 
   console.log(result)
 
   console.log('\n')
-
-  // TODO: once collateral seized : sell to usdc
 }
 
 function getSupplyBalanceUnderlyingInUSD(token: Token) {
@@ -67,43 +68,7 @@ function getBorrowBalanceUnderlyingInUSD(token: Token) {
   return token.borrowBalanceUnderlying * token.market.underlyingPriceUSD
 }
 
-function getTokenContract(token: Token) {
-  // TODO: add missing ABI
-  let ABI
-  switch (token.symbol) {
-    case 'jAVAX':
-      ABI = jAVAXABI
-      break
-    case 'jWETH':
-      ABI = jWETHABI
-      break
-    case 'jWBTC':
-      ABI = jWBTCABI
-      break
-    case 'jUSDC':
-      ABI = jUSDCABI
-      break
-    case 'jUSDT':
-      // ABI = jUSDTABI
-      break
-    case 'jDAI':
-      // ABI = jDAIABI
-      break
-    case 'jLINK':
-      // ABI = jLINKABI
-      break
-    case 'jMIM':
-      // ABI = jMIMABI
-      break
-  }
-  return new web3.eth.Contract(ABI as AbiItem[], token.market.id)
-}
-
-function getCloseFactor() {
-  return 0.5
-}
-
-// flash loan -> liquidate -> sell collateral -> repay flash loan 
+// flash loan -> liquidate -> sell collateral -> repay flash loan
 
 // liquidator is msg.sender
 // call(from { account: })
