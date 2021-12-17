@@ -1,8 +1,8 @@
 # Trader Joe lending monitoring
 
-Bot to monitor TraderJoe underwater accounts. 
-
-It triggers the liquidate method of a contract when accounts with health lower than 1 are detected.
+1. Monitor underwater accounts via TraderJoe lending subgraph
+2. Determine which assets to repay and seize
+3. Trigger the liquidate method of a contract with three parameters : borrower address, asset to repay, asset to seize
 
 ## Commands
 
