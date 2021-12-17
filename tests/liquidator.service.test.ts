@@ -1,9 +1,11 @@
 import { expect } from 'chai'
 import { getRepayAndCollateralJTokens } from '../src/services/liquidator.service'
-import { Account } from '../src/services/underwater-accounts.service'
+import { Account } from '../src/services/accounts.service'
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-describe('getRepayAndCollateralJTokens', function () {
-  it('should repay USDC and seize USDC', function () {
+describe('getRepayAndCollateralJTokens', () => {
+  it('should repay USDC and seize USDC', () => {
     // GIVEN
     const underwaterAccount: Account = {
       hasBorrowed: true,
@@ -47,7 +49,7 @@ describe('getRepayAndCollateralJTokens', function () {
     expect(jTokens.collateral.symbol).equal('jUSDC')
   })
 
-  it('should repay WETH and seize WETH', function () {
+  it('should repay WETH and seize WETH', () => {
     // GIVEN
     const underwaterAccount: Account = {
       hasBorrowed: true,
@@ -91,7 +93,7 @@ describe('getRepayAndCollateralJTokens', function () {
     expect(jTokens.collateral.symbol).equal('jWETH')
   })
 
-  it('should repay MIM and seize AVAX', function () {
+  it('should repay MIM and seize AVAX', () => {
     // GIVEN
     const underwaterAccount: Account = {
       hasBorrowed: true,
@@ -159,7 +161,7 @@ describe('getRepayAndCollateralJTokens', function () {
     expect(jTokens.collateral.symbol).equal('jAVAX')
   })
 
-  it('should repay USDC and seize AVAX', function () {
+  it('should repay USDC and seize AVAX', () => {
     // GIVEN
     const underwaterAccount: Account = {
       hasBorrowed: true,

@@ -1,25 +1,30 @@
-# Trader Joe Liquidation Bot
+# Trader Joe lending monitoring
 
-1. Identity underwater accounts (0 < health < 1) using subgraph: https://thegraph.com/hosted-service/subgraph/traderjoe-xyz/lending
+## Commands
 
-Subscription to trigger smart contract function ?
+### Run the application
+```
+npm run start
+```
 
-2. Choose collateral to be seized
-
-3. Flash loan (see Aave doc: https://docs.aave.com/developers/guides/flash-loans)
+### Print low health accounts 
+```
+npm run print
+```
 
 ## Test
 
 ```
-source .env
-
-npx ganache-cli \
---fork https://mainnet.infura.io/v3/$WEB3_INFURA_PROJECT_ID \
---unlock $WETH_WHALE \
---unlock $DAI_WHALE \
---unlock $USDC_WHALE \
---unlock $USDT_WHALE \
---unlock $WBTC_WHALE \
---networkId 999
-``
+npm run test
 ```
+
+## Configuration
+
+### Environment variables
+
+| ENV Variable                 | Description                                                                 |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| PROVIDER_URL                 | Avalanche network URL                                                       |
+| THEGRAPH_BASE_URL            | TraderJoe lending subgraph URL                                              |
+| TRADERJOE_LIQUIDATOR_ADDRESS | Liquidator contract address                                                 |
+| OWNER_PRIVATE_KEY            | Owner of TRADERJOE_LIQUIDATOR_ADDRESS                                       |

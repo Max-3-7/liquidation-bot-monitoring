@@ -1,5 +1,9 @@
-import { fetchUnderwaterAccountsAndLiquidate } from './services/liquidator.service'
+import { fetchUnderwaterAccountsAndLiquidate, printAccountsWithLowHealth } from './services/liquidator.service'
 
-setInterval(fetchUnderwaterAccountsAndLiquidate, 5 * 1000)
+const args = process.argv.slice(2)
 
-// TODO: https://www.apollographql.com/docs/react/data/subscriptions/
+if (args[0] === '--print-low-health-accounts') {
+    printAccountsWithLowHealth()
+} else {
+    setInterval(fetchUnderwaterAccountsAndLiquidate, 1 * 1000)
+}
