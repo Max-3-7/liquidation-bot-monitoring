@@ -11,6 +11,7 @@ export async function fetchUnderwaterAccountsAndLiquidate() {
   const health_lt = 1
   const underwaterAccounts = await fetchAccounts(health_lt)
 
+  console.log(`Found ${underwaterAccounts.length} underwater accounts`)
   if (underwaterAccounts.length === 0) {
     return
   }
@@ -40,13 +41,15 @@ async function liquidate(borrower: string, jTokenRepay: string, jTokenCollateral
 
   const owner = web3.eth.accounts.privateKeyToAccount(process.env.OWNER_PRIVATE_KEY)
   const liquidator = new web3.eth.Contract(TraderJoeLiquidatorABI as AbiItem[], process.env.TRADERJOE_LIQUIDATOR_ADDRESS, { from: owner.address })
-  const result = await liquidator.methods
-    .liquidate(borrower, jTokenRepay, jTokenCollateral)
-    .call()
-    .catch((e) => console.error(e))
-
-  console.log(result)
-  console.log('\n')
+  try {
+    const result = await liquidator.methods
+      .liquidate(borrower, jTokenRepay, jTokenCollateral)
+      .call()
+    console.log(result)
+    console.log('\n')
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 function getSupplyBalanceUnderlyingInUSD(token: Token) {
