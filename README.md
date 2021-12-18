@@ -38,5 +38,5 @@ npm run test
 | ---------------------------- | --------------------------------------------------------------------------- |
 | PROVIDER_URL                 | Avalanche network URL                                                       |
 | THEGRAPH_BASE_URL            | TraderJoe lending subgraph URL                                              |
-| TRADERJOE_LIQUIDATOR_ADDRESS | Liquidator contract address                                                 |
+| TRADERJOE_LIQUIDATOR_ADDRESS | Avalanche C-Chain address of the liquidator contract                        |
 | OWNER_PRIVATE_KEY            | Owner of TRADERJOE_LIQUIDATOR_ADDRESS                                       |
