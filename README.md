@@ -4,6 +4,12 @@
 2. Determine which assets to repay and seize
 3. Trigger the liquidate method of a contract with three parameters : borrower address, asset to repay, asset to seize
 
+## Installation
+
+```
+npm install
+```
+
 ## Commands
 
 ### Run the application
